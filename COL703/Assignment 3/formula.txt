@@ -1,0 +1,4 @@
+c CNF formula (p1) ∧ (p2)
+p cnf 2 2
+1 0
+2 0
