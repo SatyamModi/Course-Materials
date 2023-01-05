@@ -1,0 +1,321 @@
+\documentclass[10pt,addpoints]{exam}
+\mathchardef\mhyphen="2D
+\usepackage{amsfonts,amssymb,amsmath,amsthm,verbatim,enumitem}
+\usepackage{graphicx}
+\usepackage{systeme}
+\usepackage{pgf,tikz,pgfplots}
+\usepackage{algorithm,algpseudocode}
+\usepackage{hyperref}
+\pgfplotsset{compat=1.15}
+\usepgfplotslibrary{fillbetween}
+\usepackage{mathrsfs}
+\usetikzlibrary{arrows}
+\usetikzlibrary{calc}
+\newcommand*{\rom}[1]{\expandafter\@slowromancap\romannumeral #1@}
+\usepackage{enumitem}
+\usepackage{tfrupee}
+\newcommand{\encode}{\mathsf{Encode}}
+\newcommand{\noise}{\mathsf{Noise}}
+\newcommand{\decode}{\mathsf{Decode}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\keyrec}{\mathsf{Key\mhyphen Recovery\mhyphen Security}}
+\newcommand{\calA}{\mathcal{A}}
+\newcommand{\calB}{\mathcal{B}}
+\newcommand{\calC}{\mathcal{C}}
+\newcommand{\calD}{\mathcal{D}}
+\newcommand{\calE}{\mathcal{E}}
+\newcommand{\calK}{\mathcal{K}}
+\newcommand{\calM}{\mathcal{M}}
+\newcommand{\calR}{\mathcal{R}}
+\newcommand{\keygen}{\mathsf{KeyGen}}
+\newcommand{\enc}{\mathsf{Enc}}
+\newcommand{\dec}{\mathsf{Dec}}
+\newcommand{\negl}{\mathsf{negl}}
+\newcommand{\noqss}{\mathsf{No\mhyphen Query \mhyphen Semantic \mhyphen Security}}
+\newcommand{\commit}{\mathsf{Commit}}
+\newcommand{\open}{\mathsf{Open}}
+\newcommand{\kdm}{\ensuremath{\mathsf{KDM Security}}}
+
+\newcommand{\prob}[1]{\Pr\left[ #1 \right]}
+\newcommand{\jai}[1]{\textcolor{red}{[Jai: #1]}}
+\newcommand{\tooba}[1]{\textcolor{red}{Tooba: #1}}
+\newcommand{\narayan}[1]{\textcolor{red}{Narayan: #1}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% Protocols, figures %%%%%%%%%%
+\newlength{\protowidth}
+\newcommand{\pprotocol}[5]{
+{\begin{figure*}[#4]
+\begin{center}
+\setlength{\protowidth}{\textwidth}
+\addtolength{\protowidth}{-3\intextsep}
+
+\fbox{
+        \small
+        \hbox{\quad
+        \begin{minipage}{\protowidth}
+    \begin{center}
+    {\bf #1}
+    \end{center}
+        #5
+        \end{minipage}
+        \quad}
+        }
+        \caption{\label{#3} #2}
+\end{center}
+\vspace{-4ex}
+\end{figure*}
+} }
+
+
+\newcommand{\protocol}[4]{
+\pprotocol{#1}{#2}{#3}{tbh!}{#4} }
+
+
+
+
+
+\pagestyle{head}
+
+\firstpageheader{2201-COL759}{Assignment 1 \\ Total marks: 50}{Due Date: 04 September 2022}
+\firstpageheadrule
+
+\begin{document}
+
+
+\vspace{0.4cm}
+
+\section*{Instructions}
+
+\begin{itemize}
+    \item You are allowed to work in groups of size at most $2$. 
+
+    \item The assignments must be typed in Latex, and the resulting pdf must be submitted on Gradescope. 
+    
+    \item The bonus question is  somewhat challenging, and you are recommended to attempt it only after solving all the other problems. 
+    
+    \item \textbf{Plagiarism policy}: You should not discuss your solutions with other group members. Sharing your solutions with other group members is strictly not allowed, and if there are significant similarities in two or more submissions, all relevant group members will be penalized. 
+    
+    You can refer to resources online, but you should write your solutions in your own words (and also cite the resources used). 
+\end{itemize}
+
+
+\section*{Notations}
+
+\begin{itemize}
+    \item For any natural number $\ell$, $\{0,1\}^{\leq \ell}$ denotes the set of all binary strings of length at most $\ell$. 
+
+    \item Some of the problems in this assignment use the $\noqss$ game, which was defined in Lecture 04 (Definition 04.02). However, in some cases, we allow the message space to be $\calM = \{0,1\}^{\leq \ell}$ for some $\ell$. In such cases, the adversary must send messages $m_0, m_1$ of the same length. 
+\end{itemize}
+
+
+\section*{Questions}
+\begin{questions}
+
+\question (10 marks)
+\textbf{Encryption Schemes with relaxed security}
+    
+Let $\calE = (\keygen,\enc, \dec)$ be an encryption scheme with message space $\calM$, key space $\calK$ and ciphertext space $\calC$. The scheme satisfies perfect correctness, but not perfect  secrecy. Instead, it satisfies the following relaxed secrecy guarantee:
+
+For any adversary $\calA$, $\Pr[\calA \text{ wins the } \noqss \text{ game}] \leq 1/2 + \epsilon$, where the security game $\noqss$ is an interactive game between a challenger and an adversary, and is defined in Figure \ref{noqss}. 
+\protocol{$\noqss$}{The No-Query Semantic Security Game}{noqss}{
+    \begin{enumerate}
+        \item Adversary sends two messages $m_0, m_1$ to the challenger. 
+        \item The challenger chooses a bit $b \gets \{0,1\}$, key $k \gets \calK$ and sends $\enc(m_b, k)$ to the adversary.
+        \item The adversary sends its guess $b'$, and wins the security game if $b=b'$. 
+    \end{enumerate}
+}
+    
+What can we conclude about $|\calK|$ vs $|\calM|$? And $|\calC|$ vs $|\calM|$?
+
+\vspace{20pt}
+
+\question (10 marks)
+\textbf{Security against key recovery attacks}
+
+Let $\calE = (\keygen, \enc, \dec)$ be an encryption scheme with message space $\calM$, ciphertext space $\calC$ and key space $\calK$. Consider the following security game between a challenger and an adversary: 
+
+\protocol{$\keyrec$}{The Key-Recovery Game}{keyrec}{
+    \begin{enumerate}
+        \item The challenger chooses a message $m \gets \calM$, key $k \gets \calK$ and sends $(m, \enc(m, k))$ to the adversary.
+        \item The adversary sends its guess $k'$, and wins the security game if $k=k'$. 
+    \end{enumerate}
+}
+    
+    
+We say that $\calE$ is secure against key-recovery attacks if, for every prob. poly. time adversary $\calA$, there exists a negligible function $\mu(\cdot)$ such that for all $n$, $$ \prob{\calA \text{ wins the }\keyrec \text{ game } } \leq 1/|\calK| + \mu(n).$$
+    
+    
+\begin{enumerate}
+    \item (3 marks) Show that Shannon's One-Time Pad is not secure against key recovery attacks. 
+    % \item (3 marks) Construct an encryption scheme $\calE$ that is secure against key recovery attacks. Note that for this part, you are not assuming the security of any building block (that is, your security proof must be unconditional). Your key space will need to be larger than the message space. 
+    \item (7 marks) Let $G : \{0,1\}^n \to \{0,1\}^{100 n}$ be a secure pseudorandom generator. Show that the encryption scheme $\calE_{G}$ (with key space $\calK = \{0,1\}^n$ and message space $\calM = \{0,1\}^{100 n}$) satisfies $\keyrec$, assuming $G$ is a secure PRG. 
+\end{enumerate}
+
+
+\vspace{20pt}
+
+\question (15 marks)
+\textbf{Bad Disk Encryption}
+
+Disk encryption systems often use regular secret key encryption schemes. 
+Sometimes, these systems store the secret key on the disk before encrypting the disk, and this can lead to security attacks! This may seem counter-intuitive at first, since the encryption scheme used satisfies standard security definitions (such as the semantic security definition discussed in class).
+
+The vulnerability arises because the `message' being encrypted depends on the key itself. In the regular definitions, the adversarially chosen messages $m_0, m_1$ are independent of the secret key.
+
+
+Let $\calE = (\keygen, \enc, \dec)$ be an encryption scheme with message space $\{0,1\}^{\leq \ell}$ and key space $\{0,1\}^n$, where $\ell > n$. Security against key-dependent-message attacks is captured via the security game defined in Figure \ref{kdm}: 
+
+\protocol{\kdm}{Key Dependent Message Security}{kdm}{
+\begin{enumerate}
+    \item The adversary chooses two message $m_0, m_1$ of equal length,  $|m_0| = |m_1| \leq \ell-n$. 
+    
+    \item The challenger chooses a secret key $k \gets \{0,1\}^n$, bit $b\gets \{0,1\}$, and sends $\enc(k~||~m_b, k)$. 
+    
+    \item The adversary guesses whether it received a key-dependent encryption of $m_0$ or $m_1$. It sends its guess $b'$, and wins if $b=b'$.
+\end{enumerate}
+}
+An encryption scheme $\calE$ is secure against key-dependent attacks if for any probabilistic polynomial time adversary $\calA$, there exists a negligible function $\negl(\cdot)$ such that for all $n$, $\calA$ wins in the above security game with probability at most $1/2 + \negl(n)$. 
+
+\vspace{10pt}
+
+In this problem, we will show that no-query semantic security  (Definition 04.02 defined in Lecture 04) does not imply key-dependent message security. Let $\calE$ be an encryption scheme with message space $\calM = \{0,1\}^{\leq \ell}$, key space $\calK = \{0,1\}^n$ ($\ell > n)$ and it satisfies no-query semantic security (note: since the message space allows messages of different length, in the $\noqss$ game, both messages $m_0, m_1$ must be of same length). 
+
+
+Your goal is to build a new encryption scheme $\calE'$ (using $\calE$ as a building block). 
+
+\begin{itemize}
+    \item (4 marks) Construct encryption scheme $\calE'$ using $\calE$ as a building block. The new encryption scheme must have the same message and key space as $\calE$. However, you are allowed to alter the ciphertext space.  Show that $\calE' $ satisfies perfect correctness, assuming $\calE$ is perfectly correct. 
+    
+    \textbf{You should not assume anything about the base encryption scheme} $\calE$, other than the fact that it has key space $\calK = \{0,1\}^n$, message space $\{0,1\}^{\leq \ell}$ and  satisfies perfect correctness and $\noqss$.\\  
+
+    \item (7 marks) Show that $\calE'$ satisfies no-query semantic security, assuming $\calE$ is no-query semantic secure. That is, show that if there exists a p.p.t. adversary $\calA$ that breaks the no-query semantic security of $\calE'$, then there exists a p.p.t. algorithm $\calB$ that breaks the no-query semantic security of $\calE$. \\
+    
+    \item (4 marks) Show that $\calE'$ does not satisfy key-dependent message security. In particular, show that there exists a polynomial time algorithm that wins the key-dependent security game with probability close to $1$. 
+\end{itemize}
+
+
+\vspace{20pt}
+
+\question (15 marks)
+\textbf{Bit Commitment Schemes from PRGs}
+
+In class, we saw that a PRG can be used for building a secure encryption scheme $\calE_G$. Here, we will use PRGs as a building block for building a \emph{digital commitment scheme}.
+
+
+\vspace{5pt}
+
+\emph{Commitment Schemes}: Consider the following scenario --- an instructor has put out a difficult assignment, and wants to convince his students that he knows the solutions. To do so, he puts the written solutions in a locked briefcase, and hands the locked briefcase to his students. Later, once the assignment deadline is over, he opens the briefcase using his key, and the students can access the solutions, and verify that he indeed knew the solutions. We require two properties here: 
+\begin{itemize}[noitemsep]
+    \item The locked briefcase should not reveal the contents inside. The students should not be able to access the solutions before the deadline. This is the \emph{hiding property}. 
+    \item The instructor should not be able to `modify' the contents. This is to ensure that the instructor indeed knows the solutions (and is not simply `copying' the solutions of his bright students). In the case of a physical briefcase, such modification of contents is not possible, and we want to keep this in mind when we move to the digital analogue.
+\end{itemize}
+
+\vspace{5pt} 
+
+\newcommand{\commitrec}{\mathsf{Commit\mhyphen Rec}}
+\newcommand{\commitsend}{{\mathsf{Commit\mhyphen Send}}}
+\newcommand{\rmsg}{\mathsf{r\mhyphen msg}}
+\newcommand{\com}{\mathsf{com}}
+\newcommand{\op}{\mathsf{op}}
+\newcommand{\checkopen}{\mathsf{CheckOpen}}
+\newcommand{\bindinggame}{\ensuremath{\mathsf{Binding\mhyphen Game}}}
+\newcommand{\hidinggame}{{\ensuremath{\mathsf{Hiding\mhyphen Game}}}}
+
+\emph{Digital Commitment Schemes}: Digital commitment schemes are the digital analogue of a sealed briefcase. In this problem, we will consider one-round bit commitment schemes. Here, Alice wants to commit to a single bit $b \in \{0,1\}$. She interacts with Bob. Bob sends the first message, after which Alice sends the commitment to Bob. At a later point, Alice can give an `opening' to convince Bob that she had committed to bit $b$. Until Bob receives the opening, Bob should not be able to know whether Alice had committed to bit $0$ or $1$. This is a one-round commitment scheme since Bob sends one message, Alice sends another message and that completes the commitment phase. 
+
+More formally, a one-round commitment scheme consists of three algorithms: $\commitrec, \commitsend$ and $\open$ with the following syntax: 
+\begin{itemize}
+     \item $\commitrec(1^n)$: takes as input the security parameter, and outputs the receiver-message $\rmsg$.
+     \item $\commitsend(\rmsg, b): $ takes as input the receiver-message, the bit $b$ to be committed, and outputs a commitment $\com$ and opening $\op$. 
+     \item $\checkopen(\rmsg, \com, \op, b)$: is a deterministic algorithm that takes as input the receiver-message $\rmsg$, a commitment $\com$, opening $\op$, bit $b$ and outputs $1$ (indicating that $\op$ is a valid opening for $(\com, b)$) or $0$ (indicating that $\op$ is not a valid opening for $(\com, b)$).
+\end{itemize} 
+
+These algorithms must satisfy the following correctness property for any $b\in \{0,1\}$: 
+\[
+\prob{
+\begin{array}{c}
+\rmsg \gets \commitrec(1^n);\\ (\com, \op) \gets \commitsend(\rmsg, b);\\ \checkopen(\rmsg, \com, \op, b) = 1
+\end{array}
+} = 1
+\]
+where the probability is over the randomness used by $\commitrec$, $\commitsend$. 
+
+
+\vspace{10pt}
+
+A commitment scheme must satisfy the following two security properties: 
+
+\begin{itemize}
+    \item \textbf{Binding property}: Intuitively, no adversarial sender should be able to commit to one bit, and later produce opening for a different bit. 
+
+
+    Formally, a commitment scheme satisfies the binding property if for any prob. poly. time adversary $\calA$, there exists a negligible function $\mu(\cdot)$ such that for all $n$, $\prob{\calA \text{ wins the binding security game}} \leq \mu(n)$ where the binding security game is defined below: 
+    \protocol{\bindinggame}{The Binding Security Game}{bindinggame}{
+        \begin{itemize}
+            \item Challenger chooses $\rmsg \gets \commitrec(1^n)$ and sends $\rmsg$ to $\calA$. 
+            \item Adversary sends a commitment $\com$, together with two openings $\op_0$ and $\op_1$. The adversary wins if $\checkopen(\rmsg, \com, \op_0, 0) = \checkopen(\rmsg, \com, \op_1, 1) = 1.$
+        \end{itemize}
+    }
+
+    \item \textbf{Hiding property}: Intuitively, no advesarial receiver should be able to learn the bit committed, given only the commitment. Note that the adversary is allowed to choose the receiver-message arbitrarily. This security is defined via the bit-guessing game, but we can also consider the equivalent two-worlds formulation. 
+
+
+    Formally, a commitment scheme satisfies the hiding property if for any prob. poly. time adversary $\calA$, there exists a neglibile function $\mu(\cdot)$ such that for all $n$, $\prob{\calA \text{ wins the hiding security game}} \leq 1/2+\mu(n)$ where the binding security game is defined below: 
+    \protocol{\hidinggame}{The Hiding Security Game}{hidinggame}{
+        \begin{itemize}
+            \item Adversary sends $\rmsg$ to the challenger. 
+            \item Challenger chooses $b\gets \{0,1\}$, computes $(\com, \op) \gets \commitsend(\rmsg, b)$ and sends $\com$ to $\calA$ (note that the adversary does not get $\op$). 
+            \item Adversary sends guess $b'$ and wins if $b=b'$. 
+        \end{itemize}
+    }
+
+    \end{itemize}
+    
+    \vspace{10pt}
+
+    \textbf{Construction}: Let $G : \{0,1\}^n \to \{0,1\}^{3n}$ be a secure PRG. Consider the following commitment scheme:
+    \begin{itemize}
+         \item $\commitrec(1^n)$: sends a uniformly random $3n$-bit string $\rmsg \gets \{0,1\}^{3n}$.
+         \item $\commitsend(\rmsg, b): $ chooses a uniformly random $n$-bit string $s \gets \{0,1\}^n$. If $b=0$, it sets $\com = G(s)$,  else it sets $\com = G(s) \oplus \rmsg$. The opening is the string $s$. 
+         \item $\checkopen(\rmsg, \com, \op, b)$: if $b=0$, the algorithm checks if $G(\op) = \com$, and if $b=1$, it checks if $G(\op) \oplus \rmsg = \com$. 
+    \end{itemize} 
+
+
+    \vspace{20pt}
+    \textbf{Questions:}
+    \begin{enumerate}
+        \item (6 marks) Show that if $G$ is a secure PRG, then the above commitment scheme satisfies the hiding property. Give a formal proof by first defining the reduction algorithm, then analyse the reduction algorithm's success probability. 
+        
+        \item (6 marks) Show that the above scheme satisfies the binding property. This part does not rely on the security of PRG, and should hold true for any function $G$ with input space $\{0,1\}^n$ and output space $\{0,1\}^{3n}$.
+        
+        \item (3 marks) What is the role of the receiver's first message in this scheme? In other words, what would break if $\commitrec$ simply outputs an empty message, and $\commitsend$ chooses $\rmsg$?
+    \end{enumerate}
+
+    \question (Bonus Question: 5 marks)
+    In this question, we will see a variant of the PRG definition, called \emph{circular PRG security}. We want to study whether regular PRG security implies circular PRG security. 
+
+
+    Let $G:\{0,1\}^n \to \{0,1\}^{n^2}$ be a deterministic function. We can parse the output as $n$ strings, each $n$ bits long. We say that $G$ satisfies circular PRG security, if for any p.p.t adversary $\calA$, there exists a negligible function $\mu(\cdot)$ such that for all $n$, $\prob{\calA \text{ wins the circular PRG security game}} \leq 1/2 + \mu(n)$, where the circular PRG security game is defined below: 
+    
+    \newcommand{\circprg}{\mathsf{Circular\mhyphen PRG~security}}
+    \protocol{$\circprg$}{The Circular PRG Security Game}{circprg}{
+        \begin{itemize}
+            \item Challenger chooses $b\gets \{0,1\}$, $s\gets\{0,1\}^n$ and $y = (y_1 ~|| ~ \ldots ~||~ y_n) \gets \{0,1\}^{n^2}$ (where each $y_i \in \{0,1\}^n$).
+
+            If $b=0$, it first computes $z = G(s)$. Parse $z = (z_1 ~||~ z_2 ~ \ldots ~ || ~ z_n)$ where each $z_i \in \{0,1\}^n$. For each $i\in [n]$, if $s_i = 0$, then sets $u_i = y_i$, else sets $u_i = z_i$. It sends $u$ to $\calA$.
+
+            If $b=1$, it sends $u = y$ to $\calA$.
+            
+            \item Adversary sends guess $b'$ and wins if $b=b'$. 
+        \end{itemize}
+    }
+
+    Intuitively, it appears that PRG security should imply circular PRG security. If $b=0$, the adversary receives pseudorandom bits at some positions, and random bits at some positions, and we might expect that if $G$ satisfies PRG security, then it must also satisfy circular PRG security. However, note that the obvious reduction does not work. This is because PRG security does not imply circular PRG security. 
+
+    \vspace{10pt}
+
+    Let $G: \{0,1\}^n \to \{0,1\}^{n^2} $ be a secure PRG. Construct a new function $G'$ with the same input/output domain such that $G'$ is a secure PRG, but does not satisfy circular PRG security. 
+
+
+\end{questions}
+
+\end{document}

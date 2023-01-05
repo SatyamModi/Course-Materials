@@ -1,0 +1,365 @@
+\documentclass[10pt,addpoints]{exam}
+\mathchardef\mhyphen="2D
+\usepackage{amsfonts,amssymb,amsmath,amsthm,verbatim,enumitem}
+\usepackage{graphicx}
+\usepackage{systeme}
+\usepackage{pgf,tikz,pgfplots}
+\usepackage{algorithm,algpseudocode}
+\usepackage{hyperref}
+\pgfplotsset{compat=1.15}
+\usepgfplotslibrary{fillbetween}
+\usepackage{mathrsfs}
+\usetikzlibrary{arrows}
+\usetikzlibrary{calc}
+\newcommand*{\rom}[1]{\expandafter\@slowromancap\romannumeral #1@}
+\usepackage{enumitem}
+\usepackage{tfrupee}
+\newcommand{\encode}{\mathsf{Encode}}
+\newcommand{\noise}{\mathsf{Noise}}
+\newcommand{\decode}{\mathsf{Decode}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\subgrp}[2]{\langle #1 \rangle_{#2}}
+
+\newcommand{\keyrec}{\mathsf{Key\mhyphen Recovery\mhyphen Security}}
+\newcommand{\calA}{\mathcal{A}}
+\newcommand{\calB}{\mathcal{B}}
+\newcommand{\calC}{\mathcal{C}}
+\newcommand{\calD}{\mathcal{D}}
+\newcommand{\calE}{\mathcal{E}}
+\newcommand{\calF}{\mathcal{F}}
+\newcommand{\calG}{\mathcal{G}}
+\newcommand{\calH}{\mathcal{H}}
+\newcommand{\calK}{\mathcal{K}}
+\newcommand{\calM}{\mathcal{M}}
+\newcommand{\calP}{\mathcal{P}}
+\newcommand{\calR}{\mathcal{R}}
+\newcommand{\calS}{\mathcal{S}}
+\newcommand{\calT}{\mathcal{T}}
+\newcommand{\calX}{\mathcal{X}}
+\newcommand{\calY}{\mathcal{Y}}
+
+
+\newcommand{\thh}{^{\mathrm{th}}}
+\newcommand{\keygen}{\mathsf{KeyGen}}
+\newcommand{\enc}{\mathsf{Enc}}
+\newcommand{\dec}{\mathsf{Dec}}
+
+\newcommand{\mac}{\mathsf{MAC}}
+\newcommand{\sign}{\mathsf{Sign}}
+\newcommand{\verify}{\mathsf{Verify}}
+
+\newcommand{\zpst}{\mathbb{Z}_p^*}
+
+\newcommand{\negl}{\mathsf{negl}}
+\newcommand{\poly}{\mathsf{poly}}
+
+\newcommand{\noqss}{\mathsf{No\mhyphen Query \mhyphen Semantic \mhyphen Security}}
+\newcommand{\commit}{\mathsf{Commit}}
+\newcommand{\open}{\mathsf{Open}}
+\newcommand{\kdm}{\ensuremath{\mathsf{KDM Security}}}
+\newcommand{\phybb}[1]{p_{\mathrm{hyb}, #1}}
+\newcommand{\lin}{\ell_{\mathrm{in}}}
+\newcommand{\lout}{\ell_{\mathrm{out}}}
+\newcommand{\bit}{\{0,1\}}
+\newcommand{\sd}{\mathsf{SD}}
+\newcommand{\swap}{\mathsf{swap}}
+
+\newcommand{\DES}{\mathsf{DES}}
+\newcommand{\AES}{\mathsf{AES}}
+\newcommand{\DESinv}{\mathsf{DES}^{-1}}
+
+\newcommand{\bin}{\mathsf{bin}}
+
+\newcommand{\ct}{\mathsf{ct}}
+\newcommand{\Finverse}{F^{-1}}
+\newcommand{\twodes}{2\mathsf{DES}}
+\newcommand{\twodesinv}{2\mathsf{DES}^{-1}}
+\newcommand{\prob}[1]{\Pr\left[ #1 \right]}
+\newcommand{\gensafeprime}{\mathsf{Gen\mhyphen Safe\mhyphen Prime}}
+
+\newcommand{\TODO}[1]{\textcolor{magenta}{[\textbf{TODO}: #1]}}
+
+\newcommand{\jai}[1]{\textcolor{red}{[Jai: #1]}}
+\newcommand{\tooba}[1]{\textcolor{red}{Tooba: #1}}
+\newcommand{\narayan}[1]{\textcolor{red}{Narayan: #1}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% Protocols, figures %%%%%%%%%%
+\newlength{\protowidth}
+\newcommand{\pprotocol}[5]{
+{\begin{figure*}[#4]
+\begin{center}
+\setlength{\protowidth}{\textwidth}
+\addtolength{\protowidth}{-3\intextsep}
+
+\fbox{
+        \small
+        \hbox{\quad
+        \begin{minipage}{\protowidth}
+    \begin{center}
+    {\bf #1}
+    \end{center}
+        #5
+        \end{minipage}
+        \quad}
+        }
+        \caption{\label{#3} #2}
+\end{center}
+\vspace{-4ex}
+\end{figure*}
+} }
+
+
+\newcommand{\protocol}[4]{
+\pprotocol{#1}{#2}{#3}{tbh!}{#4} }
+
+
+
+\newcommand{\defbox}[1]{
+    {\begin{figure*}[tbh]
+        \begin{center}
+        \setlength{\protowidth}{\textwidth}
+        \addtolength{\protowidth}{-3\intextsep}
+
+        \fcolorbox{red}{pink}{
+                \small
+                \hbox{\quad
+                \begin{minipage}{\protowidth}
+            
+                #1
+                \end{minipage}
+                \quad}
+                }
+        \end{center}
+        \vspace{-4ex}
+        \end{figure*}
+        } }
+
+
+
+\newtheorem{innercustomdef}{Definition}
+\newenvironment{customdef}[1]
+  {\renewcommand\theinnercustomdef{#1}\innercustomdef}
+  {\endinnercustomdef}
+
+
+\newtheorem{innercustomthm}{\textcolor{blue}{Theorem}}
+\newenvironment{customthm}[1]
+  {\renewcommand\theinnercustomthm{\textcolor{blue}{#1}}\innercustomthm}
+  {\endinnercustomthm}
+
+
+
+\usepackage[most]{tcolorbox}
+
+
+\newtcolorbox{const}[2][]{every float=\centering,breakable,enhanced,adjusted title={#2},colback=codegray,colframe=codegray!50!black}
+
+\linespread{1.0}
+
+\definecolor{codegray}{rgb}{0.98,0.97,0.93}
+\definecolor{cottoncandy}{rgb}{1.0, 0.74, 0.85}
+\definecolor{darkcerulean}{rgb}{0.03, 0.27, 0.49}
+\definecolor{darkcyan}{rgb}{0.0, 0.50, 0.45}
+
+
+\theoremstyle{definition}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{qn}{Question}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{fact}[theorem]{Fact}
+\newtheorem{definition}{Definition}
+
+
+
+\pagestyle{head}
+
+\firstpageheader{2201-COL759}{Assignment 4 \\ Total marks: 50}{Due Date: 31st October 2022}
+\firstpageheadrule
+
+\begin{document}
+
+
+\vspace{0.4cm}
+
+\section*{Notations}
+Given a finite set $S$, let $x \gets S$ denote a uniformly random sample $x$ drawn from $S$. Let $p$ be a prime. The set $\{0,1,\ldots, p-1\}$ is represented by $\Z_p$, while $\zpst = \{1, 2, \ldots, p-1\}$. For an element $g \in \zpst$, let $\subgrp{g}{p} = \{g^0, g^1, g^2, \ldots \} \subseteq \zpst$. 
+
+
+
+    
+    \newcommand{\macell}{\mathsf{MAC}_{\ell}}
+    \newcommand{\signell}{\sign_{\ell}}
+    \newcommand{\verifyell}{\verify_{\ell}}
+    \newcommand{\mell}{m_{\ell}}
+    \newcommand{\yell}{y_{\ell}}
+
+    \color{blue}
+
+
+   
+    \section{ECBC-MAC: Proof of security}
+
+    In the previous assignment, we had stated that the encrypted CBC-MAC is a secure MAC scheme for signing unbounded length messages. In this assignment, we will prove its security. 
+
+
+    We can view the ECBC-MAC scheme as an instantiation of the `hash then sign' paradigm. 
+    Let $F: \bit^n \times \bit^n \to \bit^n$ be a secure pseudorandom function. Show that the following function family is a secure UHF, assuming $F$ is a secure PRF. The key space is $\bit^n$, the input space is $(\bit^n)^*$, output space is $\bit^n$. The evaluation on input $x = (x_1, x_2, \ldots, x_{\ell})$ is as follows: set $y_1 = F(x_1, k)$, and for all $i>1$, $y_{i} = F(x_i \oplus y_{i-1}, k)$. Output $y_{\ell}$ as the UHF evaluation. 
+
+    \vspace{10pt}
+
+
+    \color{black}
+
+    We will prove the above hash family is a secure UHF, assuming $F$ is a secure PRF. 
+
+    \subsection{Sequence of Games}
+    We will first define a sequence of games, where the first game is UHF security game. 
+
+    \begin{itemize}
+        \item \textbf{Game 0}: This is the UHF security game. 
+
+        \begin{enumerate}
+            \item The adversary sends two messages $m_0, m_1$, where $m_0 = (m_{0,1}, \ldots, m_{0, \ell_0})$ and $m_1 = (m_{1,1}, \ldots, m_{1,\ell_1})$.
+
+            \item The challenger chooses a PRF key $k$. 
+
+            It then computes $y_{0,1} = F(m_{0,1}, k)$, and for all $i \in [2, \ell_0]$, $y_{0,i} = F(m_{0, i} \oplus y_{0,i-1}, k)$. 
+
+            Similarly, it computes $y_{1,1} = F(m_{1,1}, k)$, and for all $i \in [2, \ell_1]$, $y_{1,i} = F(m_{1, i} \oplus y_{1,i-1}, k)$. 
+
+            The adversary wins if $y_{0, \ell_0} = y_{1, \ell_1}$. 
+        \end{enumerate}
+    \end{itemize}
+
+    \noindent\TODO{Fill in the remaining games. (2 marks)}
+
+    \subsection{Analysis}
+
+    Next, we will show that the consecutive games are indistinguishable, and the adversary has negligible winning probability in the final game. 
+
+    \vspace{10pt}
+
+    \noindent \TODO{Discuss why the consecutive games are indistinguishable. For this, you don't need to give a reduction, but formally state what property is being used. (2 marks)}
+
+    \vspace{10pt}
+
+    \noindent \TODO{Discuss why the adversary has negligible winning probability in the last game. Here you must provide a complete formal argument. (6 marks) }
+
+
+
+    \newpage
+ 
+    \color{blue}
+
+    \section{Hashing: a security notion in-between UHFs and CRHFs}
+
+    In class, when we discussed UHFs and CRHFs, one of the students proposed the following security definition for security of hash functions. Let $\calH = \{H_k : \bit^{\ell} \to \bit^n\}_{k \in \calK}$ be a family of keyed compressing functions (that is, $\ell > n$). We say that this function family satisfies U/CR-HF security if no p.p.t. adversary $\calA$ can win the following security game with non-negligible probability: 
+    \protocol{U/CR-HF}{Intermediate security notion for hash functions}{ucrhf}{
+        \begin{itemize}
+            \item \textbf{(Setup)} Challenger chooses a key $k \gets \calK$. 
+            \item \textbf{(Hash function queries)} Adversary is allowed polynomially many queries. For every query $x_i \in \bit^{\ell}$, the challenger sends $H_k(x_i)$.
+            \item \textbf{(Collision)} After polynomially many queries, adversary sends two distinct strings $x^*_0, x^*_1$, and wins if $H_k(x^*_0) = H_k(x^*_1)$. 
+        \end{itemize}
+    }
+
+    \color{black}
+
+    \subsection{UHF that is not a U/CR-HF}
+
+    \noindent\TODO{Describe construction of the hash function family. (2 marks)}
+
+    \vspace{10pt}
+
+    \noindent\TODO{Show that it is not a secure U/CR-HF. Describe the attack formally, and compute the winning probability. (2 marks)}
+
+
+    \subsection{U/CR-HF that is not a CRHF}
+
+
+    \noindent\TODO{Describe construction of the hash function family. (2 marks)}
+
+    \vspace{10pt}
+
+    \noindent\TODO{Show that it is not a secure CRHF. Describe the attack formally, and compute the winning probability. (2 marks)}
+
+
+    \subsection{Merkle-Damgard for U/CR-HFs}
+    
+    Let $\calH = \{H_k:\bit^{2n} \to \bit^n\}_{k \in \calK}$ be a secure U/CR-HF family with key space $\calK$. Show that the Merkle-Damgard transformation can be used to construct a secure U/CR-HF family with key space $\calK$, input space $(\bit^n)^{\geq 2}$ and output space $\bit^n$. 
+
+    \vspace{10pt}
+    
+    \noindent\TODO{The new hash function family $\calH'$ has unbounded message space, and the construction via Merkle-Damgard transform is same as the one we saw in class. Describe the reduction algorithm formally, and then show that if the adversary succeeds in finding a collision for $\calH'$, then the reduction algorithm finds a collision for $\calH$. (7 marks)}
+
+
+    \newpage
+
+    \color{blue}
+    \section{Collision Resistant Hashing from number-theoretic assumptions}
+
+    Let $\gensafeprime(1^n)$ be a p.p.t. algorithm that takes as input $1^n$, and generates an $n$-bit prime $p$ such that $p=2q+1$ and $q$ is also prime.\footnote{Strictly speaking, it is not known if there are infinitely many `safe primes', and therefore we don't know such an algorithm for large $n$. We know safe primes for sufficiently large $n$, which suffices for practical purposes. Also, there are other `groups' that can be used instead.} Consider the following number-theoretic assumption (known as the Discrete Log problem over prime-order subgroups of $\zpst$): 
+
+    For any p.p.t. adversary $\calA$, there exists a negligible function $\mu(\cdot)$ such that for all $n$,
+    \[
+        \Pr
+        \left[\calA(p, g, g^a) = a ~:~ 
+        \begin{array}{c}
+        p \gets \gensafeprime(1^n) \\
+        g \gets \zpst \text{ s.t. } |\subgrp{g}{p}| = q \\
+        a \gets \Z_q
+        \end{array}
+        \right]\leq \mu(n)
+    \]
+
+    Below, we define a hash function family. The function family is parameterized by a safe prime $p \gets \gensafeprime(1^n)$ and $g \in \zpst$ such that $|\subgrp{g}{p}| = q$. The input space is $\Z_q^n$, output space is $\zpst$. Each key consists of $n$ uniformly random elements $(x_1, x_2, \ldots, x_n)$ where $x_i \gets \subgrp{g}{p}$ for each $i\in [n]$. The hash function evaluation using key $k = (x_1, x_2, \ldots, x_n)$, on input $(\alpha_1, \alpha_2, \ldots, \alpha_n)$ is $(\prod_i x_i^{\alpha_i}) \mod p$. 
+
+    Show that if there exists a p.p.t. algorithm $\calA$ that breaks the collision-resistance property of this hash function family with probability $\epsilon$, then there exists a p.p.t. algorithm $\calB$ that breaks the discrete log assumption with probability $\epsilon - \negl(n)$. 
+
+
+    \vspace{10pt}
+
+    \textbf{Easier Version (8 marks)} Show that if there exists a p.p.t. algorithm $\calA$ that breaks the collision-resistance property of this hash function family with non-negligible probability $\epsilon$, then there exists a p.p.t. algorithm $\calB$ that breaks the discrete log assumption with non-negligible probability $\epsilon'$. Unlike the `full-credit' version, here $\epsilon'$ can be equal to $\epsilon/\poly(n)$. 
+
+    \color{black}
+
+    \vspace{10pt}
+
+    \noindent\TODO{For either of the versions, clearly describe the reduction algorithm. The reduction receives $(p, g, h)$ from the Discrete Log challenger. It should then prepare the hash key for the CRHF adversary. Once the CRHF adversary sends a collision, the reduction must compute the discrete log.}
+
+
+    \color{blue}
+
+    \newpage
+    \section{A CCA-secure `MAC-then-Encrypt' scheme}
+
+        In class, we saw that `MAC-then-Encrypt' is, in general, insecure against chosen-ciphertext attacks. However, for specific MAC and encryption schemes, the combination is CCA secure. Let $F_1 : \{0,1\}^{n} \times \calK_1 \to \{0,1\}^{n}$ and $F_2 : \{0,1\}^{n} \times \calK_2 \to \{0,1\}^{2n}$ be two secure pseudorandom function with key spaces  $\calK_1$ and $\calK_2$ respectively. 
+
+        Consider the following encryption scheme with message space $\{0,1\}^n$.
+
+        \begin{itemize}
+            \item $\enc(m, (k_1, k_2))$: It uses the first key $k_1$ for the signature computation; that is, it sets $\sigma = F_1(m, k_1)$. Next, it sets $z = \sigma ~||~ m$, chooses $r \gets \{0,1\}^{n}$ and sets $\ct_0 = r, \ct_1 = (z \oplus F_2(r, k_2))$. The ciphertext is $\ct = (\ct_0, \ct_1)$. 
+
+            \item $\dec((\ct_0, \ct_1), (k_1, k_2))$: The decryption algorith first computes $z = \ct_1 \oplus F_2(\ct_0, k_2)$. Let $z = \sigma ~||~ m$. Next, it checks if $\sigma = F_1(K_1, m)$. If so, it outputs $m$, else it outputs $\perp$. 
+
+        \end{itemize}
+
+        Prove that the above scheme is secure against chosen-ciphertext attacks, assuming the $F_1$ and $F_2$ are secure pseudorandom functions. 
+
+    \color{black}
+
+
+
+    \subsection{Sequence of Hybrids}
+
+    The proof proceeds via a sequence of hybrids. The first hybrid (Game 0) is the CCA security game. Next, in Game 1 we replace the pseudorandom functions with truly random functions. 
+
+    \vspace{10pt}
+
+    \noindent\TODO{At this point, this is an information-theoretic game (that is, no computational assumptions involved). Carefully define the remaining games so that you can conclude that the adversary has negligible advantage in the last game. (6 marks)}
+
+
+    \subsection{Analysis}
+
+    \noindent\TODO{Show that if an adversary has non-negligible advantage in Game $i$, then it has non-negligible advantage in Game $(i+1)$. Give a formal argument for each of these steps. (4 marks) }
+
+\end{document}

@@ -1,0 +1,480 @@
+\documentclass[10pt,addpoints]{exam}
+\mathchardef\mhyphen="2D
+\usepackage{amsfonts,amssymb,amsmath,amsthm,verbatim,enumitem}
+\usepackage{graphicx}
+\usepackage{systeme}
+\usepackage{pgf,tikz,pgfplots}
+\usepackage{algorithm,algpseudocode}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\pgfplotsset{compat=1.15}
+\usepgfplotslibrary{fillbetween}
+\usepackage{mathrsfs}
+\usetikzlibrary{arrows}
+\usetikzlibrary{calc}
+\newcommand*{\rom}[1]{\expandafter\@slowromancap\romannumeral #1@}
+\usepackage{enumitem}
+\usepackage{tfrupee}
+\newcommand{\encode}{\mathsf{Encode}}
+\newcommand{\noise}{\mathsf{Noise}}
+\newcommand{\decode}{\mathsf{Decode}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+
+\newcommand{\keyrec}{\mathsf{Key\mhyphen Recovery\mhyphen Security}}
+\newcommand{\calA}{\mathcal{A}}
+\newcommand{\calB}{\mathcal{B}}
+\newcommand{\calC}{\mathcal{C}}
+\newcommand{\calD}{\mathcal{D}}
+\newcommand{\calE}{\mathcal{E}}
+\newcommand{\calF}{\mathcal{F}}
+\newcommand{\calG}{\mathcal{G}}
+\newcommand{\calK}{\mathcal{K}}
+\newcommand{\calM}{\mathcal{M}}
+\newcommand{\calP}{\mathcal{P}}
+\newcommand{\calR}{\mathcal{R}}
+\newcommand{\calS}{\mathcal{S}}
+\newcommand{\calT}{\mathcal{T}}
+\newcommand{\calX}{\mathcal{X}}
+\newcommand{\calY}{\mathcal{Y}}
+
+
+\newcommand{\thh}{^{\mathrm{th}}}
+\newcommand{\keygen}{\mathsf{KeyGen}}
+\newcommand{\enc}{\mathsf{Enc}}
+\newcommand{\dec}{\mathsf{Dec}}
+
+\newcommand{\mac}{\mathsf{MAC}}
+\newcommand{\sign}{\mathsf{Sign}}
+\newcommand{\verify}{\mathsf{Verify}}
+
+\newcommand{\TODO}[1]{\textcolor{magenta}{[\textbf{TODO}: #1]}}
+
+\newcommand{\negl}{\mathsf{negl}}
+\newcommand{\noqss}{\mathsf{No\mhyphen Query \mhyphen Semantic \mhyphen Security}}
+\newcommand{\commit}{\mathsf{Commit}}
+\newcommand{\open}{\mathsf{Open}}
+\newcommand{\kdm}{\ensuremath{\mathsf{KDM Security}}}
+\newcommand{\phybb}[1]{p_{\mathrm{hyb}, #1}}
+\newcommand{\lin}{\ell_{\mathrm{in}}}
+\newcommand{\lout}{\ell_{\mathrm{out}}}
+\newcommand{\bit}{\{0,1\}}
+\newcommand{\sd}{\mathsf{SD}}
+\newcommand{\swap}{\mathsf{swap}}
+
+\newcommand{\DES}{\mathsf{DES}}
+\newcommand{\AES}{\mathsf{AES}}
+\newcommand{\DESinv}{\mathsf{DES}^{-1}}
+
+\newcommand{\bin}{\mathsf{bin}}
+\newcommand{\qpre}{q_{\mathrm{pre}}}
+\newcommand{\ct}{\mathsf{ct}}
+\newcommand{\Finverse}{F^{-1}}
+\newcommand{\twodes}{2\mathsf{DES}}
+\newcommand{\twodesinv}{2\mathsf{DES}^{-1}}
+\newcommand{\prob}[1]{\Pr\left[ #1 \right]}
+\newcommand{\jai}[1]{\textcolor{red}{[Jai: #1]}}
+\newcommand{\tooba}[1]{\textcolor{red}{Tooba: #1}}
+\newcommand{\narayan}[1]{\textcolor{red}{Narayan: #1}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% Protocols, figures %%%%%%%%%%
+\newlength{\protowidth}
+\newcommand{\pprotocol}[5]{
+{\begin{figure*}[#4]
+\begin{center}
+\setlength{\protowidth}{\textwidth}
+\addtolength{\protowidth}{-3\intextsep}
+
+\fbox{
+        \small
+        \hbox{\quad
+        \begin{minipage}{\protowidth}
+    \begin{center}
+    {\bf #1}
+    \end{center}
+        #5
+        \end{minipage}
+        \quad}
+        }
+        \caption{\label{#3} #2}
+\end{center}
+\vspace{-4ex}
+\end{figure*}
+} }
+
+
+\newcommand{\protocol}[4]{
+\pprotocol{#1}{#2}{#3}{tbh!}{#4} }
+
+
+
+\newcommand{\defbox}[1]{
+    {\begin{figure*}[tbh]
+        \begin{center}
+        \setlength{\protowidth}{\textwidth}
+        \addtolength{\protowidth}{-3\intextsep}
+
+        \fcolorbox{red}{pink}{
+                \small
+                \hbox{\quad
+                \begin{minipage}{\protowidth}
+            
+                #1
+                \end{minipage}
+                \quad}
+                }
+        \end{center}
+        \vspace{-4ex}
+        \end{figure*}
+        } }
+
+
+
+\newtheorem{innercustomdef}{Definition}
+\newenvironment{customdef}[1]
+  {\renewcommand\theinnercustomdef{#1}\innercustomdef}
+  {\endinnercustomdef}
+
+
+\newtheorem{innercustomthm}{\textcolor{blue}{Theorem}}
+\newenvironment{customthm}[1]
+  {\renewcommand\theinnercustomthm{\textcolor{blue}{#1}}\innercustomthm}
+  {\endinnercustomthm}
+
+
+
+
+
+\theoremstyle{definition}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{qn}{Question}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{fact}[theorem]{Fact}
+\newtheorem{definition}{Definition}
+
+
+
+\pagestyle{head}
+
+\firstpageheader{2201-COL759}{Assignment 3 \\ Total marks: 50}{Due Date: 09 October 2022}
+\firstpageheadrule
+
+\begin{document}
+
+
+\vspace{0.4cm}
+
+
+
+\color{blue}
+\section{Counter-mode MAC, long messages and small signatures \\ (20 marks)}    
+    \newcommand{\macell}{\mathsf{MAC}_{\ell}}
+    \newcommand{\signell}{\sign_{\ell}}
+    \newcommand{\verifyell}{\verify_{\ell}}
+      
+    Let $F : \bit^n \times \bit^n \to \bit^n$ be a secure pseudorandom function with input space, key space and output space all equal to $\bit^n$. Consider the following MAC scheme $\mac = (\sign, \verify)$ with message space $(\bit^n)^*$ (that is, any message is of $n\cdot k$ bits for some positive integer $k$) and key space $\bit^n$. 
+
+    \begin{itemize}
+        \item $\sign(m, k)$: Let $m=(m_1, m_2, \ldots, m_{\ell})$. The signing algorithm chooses a uniformly random string $r \gets \bit^{n/4}$. Next, it sets $x_i = [\bin(\ell)]_{n/4} ~||~ [\bin(i)]_{n/4} ~||~  r ~||~ m_i$, computes $y_i = F(x_i, k)$ and outputs $\sigma = (r, \oplus_i~ y_i)$. 
+
+        \item $\verify(m, \sigma, k)$: Let $m=(m_1, m_2, \ldots, m_{\ell})$ and $\sigma = (r, z)$. The verification algorithm sets $x_i = [\bin(\ell)]_{n/4} ~||~ [\bin(i)]_{n/4} ~||~  r ~||~ m_i$, computes $y_i = F(x_i, k)$ and checks if $z = \oplus_i ~ y_i$. 
+    \end{itemize}
+
+    \subsection{The above MAC is strongly unforgeable (10 marks)}
+
+    {
+        Show that the above MAC scheme is strongly unforgeable, assuming that $F$ is a secure pseudorandom function. For the security analysis, you must define appropriate hybrid games, and formally state why the consecutive hybrids are indistinguishable. Finally, you must argue why the adversary's probability of success in the final game is negligible.
+    }
+
+
+    \color{black}
+
+    \begin{theorem}
+        Assuming $F$ is a secure PRF, the above MAC scheme is strongly unforgeable. 
+    \end{theorem}
+
+    \begin{proof}
+
+        We will prove security via a sequence of hybrid games. 
+
+
+        \paragraph{Game 0}: This is the original security game. 
+
+        \begin{itemize}
+            \item The challenger samples a PRF key $k$. 
+
+            \item The adversary makes polynomially many signature queries. For each query $m_i = (m_{i,1}, \ldots, m_{i,\ell})$, the challenger picks a uniformly random string $r_i$. 
+
+            For each $j \in [\ell]$, it sets $x_{i,j} = [\bin(\ell)]_{n/4} ~||~ [\bin(j)]_{n/4} ~||~  r_i ~||~ m_{i,j}$, computes $y_{i,j} = F(x_{i,j}, k)$. 
+
+            Finally, it outputs $\sigma_i = (r_i, \oplus_j ~ y_{i,j})$. 
+
+            \item After the signature queries, the adversary outputs a forgery $(m^*, \sigma^*)$. Let $m^* = (m^*_1, \ldots, m^*_{\ell})$ and $\sigma^* = (r^*, y^*)$. It wins if all the following conditions hold:
+            \begin{itemize}
+                \item $(m^*, \sigma^*) \neq (m_i, \sigma_i)$ for all $i \in [q]$. 
+                \item For each $j \in [\ell]$, let $x^*_{j} = [\bin(\ell)]_{n/4} ~||~ [\bin(j)]_{n/4} ~||~  r^* ~||~ m^*_{j}$, computes $y^*_{j} = F(x^*_{j}, k)$. Finally, $y^*$ must be equal to $\oplus_j ~ y^*_{j}$. 
+
+            \end{itemize}
+        \end{itemize}
+
+
+        \TODO{Fill in the remaining hybrids (4 marks)}
+
+
+        \vspace{20pt}
+
+        \TODO{Claims to relate the success probabilities across hybrids. Finally, you also need to show that the adversary has negligible success probability in the last game. (6 marks)}
+
+    \end{proof}
+
+
+
+    \color{blue}
+    \subsection{Concrete security (5 marks)}
+    {
+        Suppose we are using $\AES\mhyphen 128$ for the PRF. The input space, key space and output space are all $\bit^{128}$. Additionally, you are given that any algorithm that sees at most $2^{64}$ $\AES$ evaluations (on inputs of its choice, using the same randomly chosen key) has at most $1/2^{64}$ advantage in the PRP security game. Propose the best possible attack on the above MAC scheme. 
+    }
+
+    \vspace{10pt}
+    \TODO{Describe the best possible attack in this scenario. Analyse the winning probability and the running time of your attack.}
+
+
+
+
+    \color{blue}
+    \subsection{Signing bit strings (5 marks)} 
+
+    {
+        Suppose we wish to support arbitrary bit-strings, instead of bit strings whose length is a multiple of $n$. Propose a modification of the above scheme that can support message space $\calM = \bit^*$. Argue informally why you think the modification is a secure MAC scheme (no formal proof of security needed here). 
+    }
+
+
+    \vspace{10pt}
+
+    \TODO{Describe modification to the above scheme.}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\newpage
+\color{blue}
+
+\section{CBC-MAC and its variants \\ (10 marks)}
+
+    Recall the CBC-based MAC scheme discussed in class. This construction, for fixed block-length messages, uses a PRF $F:\calX \times \calK \to \calX$. Let $\calM = \calX^\ell$ be the message space of our MAC scheme $\macell = (\signell, \verifyell)$, where $\signell$ and $\verifyell$ are defined below. 
+
+    \begin{itemize}
+        \item {$\signell(m = (m_1, \ldots, m_{\ell}) \in \calX^{\ell}, k \in \calK):$ Let $t_1 = F(m_1, k)$. For all $i\in [2,\ell]$, compute $t_i = F(m_i \oplus t_{i-1}, k)$. Output $t_{\ell}$ as the final signature. }
+
+        \item {$\verifyell(m = (m_1, \ldots, m_{\ell}), \sigma, k)$: Let $t_1 = F(m_1, k)$. For all $i\in [2,\ell]$, compute $t_i = F(m_i \oplus t_{i-1}, k)$. Output $1$ iff $t_{\ell} = \sigma$.}
+    \end{itemize}
+
+
+    We discussed that the above scheme is secure for fixed block-length messages. 
+
+    \begin{customthm}{A3.01}
+        \textcolor{blue}{Assuming $F$ is a secure PRF scheme, for every fixed $\ell$ the above MAC scheme $\macell$ is a strongly unforgeable MAC scheme for message space $\calX^{\ell}$.}
+    \end{customthm}
+
+    \vspace{10pt}
+
+    \subsection{A randomized variant of the above scheme (5 marks)} 
+
+        Suppose we alter the scheme above, and make the signing algorithm randomized. 
+
+        \begin{itemize}
+
+            \item \textcolor{blue}{$\signell'(m = (m_1, \ldots, m_{\ell}) \in \calX^{\ell}, k \in \calK):$ Choose a random string $x\gets \calX$. Let $t_1 = F(m_1 \oplus x, k)$. For all $i\in [2,\ell]$, compute $t_i = F(m_i \oplus t_{i-1}, k)$. Output $(x, t_{\ell})$ as the final signature.}
+
+        \end{itemize}
+
+        The verification algorithm can be appropriately defined. 
+
+        \vspace{10pt}
+
+        \TODO{describe a forgery that works \textbf{even for fixed length messages}.}
+
+        \color{black}
+
+
+
+
+
+
+    \color{blue}
+
+    \subsection{Handling unbounded length messages (5 marks)} 
+    There are a few easy modifications for handling unbounded block-length messages. One of them is described below. It gives us a MAC scheme with message space $\calX^*$. 
+
+        \begin{itemize}
+            \item $\sign^*(m = (m_1, \ldots, m_r), k)$: Let $[r]_{\calX}$ denote some canonical representation of the length $r$ as an element in $\calX$. For instance, if $\calX = \bit^n$, then this would simply be the binary representation of $r$. Let $m_0 = [r]_{\calX}$, and $m^* = (m_0, m_1, \ldots, m_r)$. Output $\sigma \gets \sign_{\ell+1}(m^*, k)$ as the signature. 
+
+        \end{itemize}
+
+
+        Verification can be defined appropriately, and this gives us a secure MAC scheme for message space $\calX^*$. It is crucial that the message block-length is \textbf{prepended} before signing. Consider the following variant where we \textbf{append} the block-length: 
+
+
+        \begin{itemize}
+            \item $\sign'(m = (m_1, \ldots, m_r), k)$: Let $[r]_{\calX}$ denote some canonical representation of the length $r$ as an element in $\calX$. Let $m_{\ell+1} = [r]_{\calX}$, and $m' = (m_1, \ldots, m_{\ell}, m_{\ell+1})$. Output $\sigma' \gets \sign_{\ell+1}(m', k)$ as the signature. 
+
+        \end{itemize}
+
+        \TODO{Show a forgery for the above MAC scheme.}
+
+         
+    \vspace{20pt}
+    
+
+
+\newpage
+
+\color{blue}
+\section{Semantic Security: Equivalent Definitions\\ (20 marks)}
+
+    \subsection{Equivalence of query-based semantic security and semantic security (10 marks)} 
+        In the quiz, you had shown that semantic security implies pre-challenge query-based semantic security. A similar reduction can be used to show that semantic security also implies query-based semantic security. 
+
+
+        In this exercise, we will show that query-based semantic security is equivalent to semantic security. In  particular, show that if an encryption scheme $\calE = (\keygen, \enc, \dec)$ satisfies \textbf{query-based semantic security}, then it also satisfies \textbf{semantic security} (Definition 15.01 in Lecture 15).  
+
+        \vspace{10pt}
+
+        For simplicity, you can assume the adversary makes at most $q$ queries in the semantic security game. 
+
+
+
+        \color{black}
+
+        \begin{theorem}
+            If an encryption scheme $\calE = (\keygen, \enc, \dec)$ satisfies \textbf{query-based semantic security}, then it also satisfies \textbf{semantic security} (Definition 15.01 in Lecture 15).
+        \end{theorem}
+
+        \begin{proof}
+
+            Consider any p.p.t. adversary $\calA$ that makes $q$ queries to the semantic security challenger. Each query consists of a pair of messages $(m_{i,0}, m_{i,1})$. In World-0, the challenger encrypts $m_{i,0}$ for all $i$, while in World-1, the challenger encrypts $m_{i,1}$ for all $i$. We will define intermediate hybrids, and use the query-based semantic security to show that the intermediate hybrids are indistinguishable. 
+
+            \paragraph{Hybrids required for proving equivalence of definitions\\ \\}
+
+            \underline{World-0}: Let $p_0$ denote the probability of $\calA$ outputting $0$ in this world. 
+
+            \begin{itemize}[noitemsep]
+                \item \textbf{Setup phase:} Challenger chooses a key $k$.
+                \item \textbf{Query phase:} Adversary $\calA$ sends $q$ queries. For the $i\thh$ query, it sends $(m_{i,0}, m_{i,1})$ and receives $\enc(m_{i,0}, k)$.
+                \item \textbf{Guess:} Finally, $\calA$ outputs its guess $b'$.
+            \end{itemize}
+
+            \vspace{10pt}
+
+            \TODO{Define intermediate hybrids such that Hybrid-0 corresponds to World-0, and the final hybrid corresponds to World-1. Let $\phybb{i}$ denote the probability of $\calA$ outputting $0$ in the $i\thh$ hybrid. (5 marks) }
+
+            \vspace{10pt}
+
+            \underline{World-1}: Let $p_1$ denote the probability of $\calA$ outputting $0$ in this world. 
+
+            \begin{itemize}[noitemsep]
+                \item \textbf{Setup phase:} Challenger chooses a key $k$.
+                \item \textbf{Query phase:} Adversary $\calA$ sends $q$ queries. For the $i\thh$ query, it sends $(m_{i,0}, m_{i,1})$ and receives {$\enc(m_{i,1}, k)$}.
+                \item \textbf{Guess:} Finally, $\calA$ outputs its guess $b'$.
+            \end{itemize}
+
+            \paragraph{Analysis}
+
+
+            Let $\phybb{i}$ denote the probability of $\calA$ outputting $0$ in the $i\thh$ hybrid. Note that $\phybb{0} = p_0$.
+
+            \begin{claim}
+                Assuming $\calE$ satisfies query-based semantic security, ...
+
+                \TODO{complete the claim}.
+            \end{claim}
+
+            \begin{proof}
+
+                \TODO{prove the above claim via appropriate reduction. You can skip the reduction's success probability analysis. (5 marks)}
+            \end{proof}
+
+        \end{proof}
+
+    \color{blue}
+    \subsection{Equivalence of pre-challenge query-based semantic security and semantic security (10 marks)}
+        Somewhat surprisingly, we can show that the post-challenge queries are not very useful. Pre-challenge query-based semantic security, query-based semantic security and semantic security are all equivalent security definitions! Show that if there exists a p.p.t. adversary $\calA$ that breaks query-based semantic security, then there exists a p.p.t reduction algorithm $\calB$ that breaks pre-challenge query-based security. 
+
+        
+        \vspace{10pt}
+
+        Note tha the reduction algorithm is not allowed to make any queries to the challenger after it receives the challenge ciphertext. However, it must somehow respond to the adversary's post-challenge queries. For simplicity, you can make the following assumptions:
+        \begin{itemize}[noitemsep]
+            \item The message space is $\{0,1\}^n$. However, you must not assume that the encryption scheme encrypts the message bit-by-bit. 
+            \item The adversary makes at most $q$ post-challenge queries. 
+        \end{itemize}
+
+
+        \color{black}
+
+
+        \begin{theorem}
+            Suppose there exists a p.p.t. adversary $\calA$ that makes $\qpre$ pre-challenge queries, $q$ post-challenge queries, and wins the query-based semantic security game with probability $1/2 + \epsilon$, where $\epsilon$ is non-negligible. Then there exists a p.p.t. algorithm $\calB$ that makes $\qpre + q$ pre-challenge queries (no post-challenge queries), and wins the pre-challenge query-based semantic security game with probability $1/2 + \ldots$ 
+        \end{theorem}
+
+
+        \begin{proof}
+
+        We will first construct a sequence of hybrid experiments between world-0 and world-1, and then show that if any two hybrids are distinguishable, then there exists a reduction algorithm $\calB$ that breaks the pre-challenge query-based semantic security. The unified reduction algorithm can be obtained by guessing the hybrids which are `most-distinguishable'.\footnote{The unified reduction is not needed for the assignment.}
+
+        \vspace{10pt}
+
+        \paragraph{Hybrid experiments:\\ \\} 
+
+        \underline{World-0:} In this experiment, the challenger responds to pre and post-challenge encryption queries made by the adversary (it uses the same key for all queries). For the challenge messages $(m^*_0, m^*_1)$, it encrypts $m^*_0$. 
+
+        \begin{itemize}[noitemsep]
+            \item \textbf{Setup:} Challenger chooses key $k$.
+            \item \textbf{Pre-challenge query phase:} The adversary makes $\qpre$ encryption queries in this phase. For each encryption query $m_i$, the challenger sends $\ct_i \gets \enc(m_i, k)$.
+            \item \textbf{Challenge phase:} The adversary sends two challenge messages $(m^*_0, m^*_1)$. The challenger sends $\ct^* \gets \enc(m^*_0, k)$. 
+            \item \textbf{Post-challenge query phase:} The adversary makes $q$ encryption queries in this phase. For each encryption query $m'_i$, the challenger sends $\ct'_i \gets \enc(m'_i, k)$.
+            \item \textbf{Guess:} Finally, the adversary sends its guess $b'$.
+        \end{itemize}
+
+
+        \vspace{10pt}
+
+        \TODO{define intermediate hybrids}
+
+        \vspace{10pt}
+
+
+        \underline{World-1:} In this experiment, the challenger responds to pre and post-challenge encryption queries made by the adversary (it uses the same key for all queries). For the challenge messages $(m^*_0, m^*_1)$, it encrypts $m^*_1$. 
+
+        \begin{itemize}[noitemsep]
+            \item \textbf{Setup:} Challenger chooses key $k$.
+            \item \textbf{Pre-challenge query phase:} The adversary makes $\qpre$ encryption queries in this phase. For each encryption query $m_i$, the challenger sends $\ct_i \gets \enc(m_i, k)$.
+            \item \textbf{Challenge phase:} The adversary sends two challenge messages $(m^*_0, m^*_1)$. The challenger sends $\ct^* \gets \enc(m^*_1, k)$. 
+            \item \textbf{Post-challenge query phase:} The adversary makes $q$ encryption queries in this phase. For each encryption query $m'_i$, the challenger sends $\ct'_i \gets \enc(m'_i, k)$.
+            \item \textbf{Guess:} Finally, the adversary sends its guess $b'$.
+        \end{itemize}
+
+
+
+        \paragraph{Analysis: }
+        \end{proof}
+
+        \TODO{Show indistinguishability of hybrids. You should have a sequence of formal claims, followed by a \textbf{precise} description of the reduction algorithm for each one. You can skip the reduction's success probability analysis.}
+
+
+
+
+
+\end{document}
